@@ -74,7 +74,7 @@ def calculate_derivatives(y0, face_v, coupon, years, num_periods):
 
 def calculate_callable_derivatives(y0, face_v, coupon, years, num_periods, strike):
     """
-    Calculates numerical derivatives for the CALLABLE bond.
+    Calculates 1st and 2nd numerical derivatives of the callable bond price function at y0.
     """
     h = 0.0001
     
@@ -98,3 +98,13 @@ def draw_tangent_line(ytm_range, y0, p0, d1):
     """
     # Linear approximation: P = P0 + slope * change_in_yield
     return p0 + d1 * (ytm_range - y0)
+
+
+def draw_convex_line(ytm_range, y0, p0, d1, d2):
+    """
+    Calculates the Y-values for a convex line at point (y0, p0).
+    """
+    dy = ytm_range - y0
+    
+    # Quadratic (Convexity) - P = P0 + P'dy + 0.5 * P''dy^2
+    return p0 + (d1 * dy) + (0.5 * d2 * dy**2)
