@@ -63,3 +63,31 @@ Launch Jupyter to begin execution:
 ```bash
 jupyter notebook
 ```
+
+## Note on Development Tools
+
+During the development of this project I used a variety of standard software tools and learning resources, including Python documentation, academic literature (CFA Institute materials, Frank Fabozzi, John Hull, etc.), and AI-assisted coding and writing tools.
+
+These tools were used primarily for:
+- improving code structure,
+- verifying mathematical expressions,
+- refining and polishing written explanations.
+- fixing constant challenges with LaTeX as I went through a learning curve with it
+
+All mathematical modeling, implementation decisions, and interpretation of results were developed and verified by the author.
+
+## Note to the Lecturer
+
+Dear Yordan,
+
+During the course you mentioned that portfolio optimization and Monte Carlo simulations are themes you have encountered way too many times in student projects. That comment stayed with me while developing this work.
+
+Coming from over twenty years of experience in finance, I initially assumed that combining practical portfolio construction with the mathematical tools explored in this course would still provide an interesting perspective — especially when extended toward option pricing, curvature analysis, and the geometric interpretation of financial payoffs.
+
+My goal with this project was therefore not simply to reproduce known models, but to connect several ideas together: portfolio optimization, derivatives, Taylor approximations, and the role of curvature in financial decision-making.
+
+I hope the result offers a slightly different angle on a familiar topic — one coming from the intersection of industry practice and newly developed mathematical intuition.
+
+As a proud alumnus of the Python Web Development track, I also aimed to structure the notebooks clearly and keep the computational parts efficient and reproducible.
+
+Thank you for the course and for pushing us to look at these topics from a deeper mathematical perspective.
