@@ -7,9 +7,9 @@ import plotly.io as pio
 from src.data_pipeline_utils import data_fetching_handling as data_pipe
 
 def plot_taylor_expansion(x_range, true_values, target_x, target_y, 
-                           tangent_values=None, quadratic_values=None, 
-                           payoff_values=None, title="Financial Sensitivity Analysis", 
-                           xlabel="Input", ylabel="Price/Value", vline_x=None):
+                           title="Financial Sensitivity Analysis", 
+                           xlabel="Input", ylabel="Price/Value", tangent_values=None, quadratic_values=None, 
+                           payoff_values=None, vline_x=None):
     """
     A unified method to plot Price Functions, Tangents (1st Order), 
     and Convexity (2nd Order).
@@ -47,6 +47,25 @@ def plot_taylor_expansion(x_range, true_values, target_x, target_y,
     return fig
 
 def create_candlestick_graph(ticker):
+    """
+    Constructs a daily OHLC candlestick visualization for a given financial ticker.
+
+    The function utilizes 'data_pipe.fetch_raw_data' to acquire historical time-series 
+    data and encapsulates it into a Plotly Figure object. The layout is standardized 
+    to prioritize price-scale clarity by disabling the default range slider.
+
+    Args:
+        ticker: The ticker symbol (e.g., 'AAPL', 'MSFT') to be retrieved and plotted.
+
+    Returns:
+        plotly.graph_objects.Figure: A configured Plotly figure object ready for 
+            interactive rendering.
+
+    Notes:
+        Requires the 'data_pipe' module to be initialized and accessible within 
+        the function's scope.
+    """
+    
     data = data_pipe.fetch_raw_data(ticker)
 
     
@@ -72,18 +91,70 @@ def create_candlestick_graph(ticker):
     
     return fig
 
-def create_histogram_distribution_daily_log_returns(ticker):
-    data = data_pipe.fetch_returns_data(ticker)
+def create_histogram_distribution_daily_log_returns(return_data, ticker, mean=None, st_dev=None):
+    """
+    Generates a frequency distribution of daily log returns with statistical overlays.
+
+    This function plots an empirical histogram of the returns and annotates the 
+    distribution with the arithmetic mean and standard deviation boundaries (1σ and 2σ). 
+    It is designed to visualize volatility clustering and the 'fat-tailed' nature 
+    (kurtosis) of financial time-series data.
+
+    Args:
+        return_data (pd.DataFrame): DataFrame containing a 'log_return_pct' column.
+        ticker (str): The financial instrument symbol for labeling purposes.
+        mean (float, optional): The population or sample mean of the log returns.
+        st_dev (float, optional): The standard deviation (volatility) of the log returns.
+
+    Returns:
+        matplotlib.figure.Figure: The figure object containing the histogram and 
+            statistical markers.
+
+    Note:
+        The function assumes standard deviation and mean parameters are provided in 
+        decimal form (e.g., 0.02 for 2%) and automatically scales them to match the 
+        percentage-based data in the histogram.
+    """
+    
+    if mean is not None:
+        mean_pct = mean * 100
+    
+    if st_dev is not None:
+        st_dev_pct = st_dev * 100
     
     fig = plt.figure(figsize=(10,6))
-    plt.hist(data["log_return_pct"], bins=100)
+    plt.hist(return_data["log_return_pct"], bins=100)
+    plt.axvline(mean, label='Mean', color='r')
+
+    if mean is not None and st_dev is not None:
+        plt.axvline(mean_pct - st_dev_pct, label='+/- 1 St Dev', color='y')
+        plt.axvline(mean_pct + st_dev_pct, label='+/- 1 St Dev', color='y')
+        plt.axvline(mean_pct - 2*st_dev_pct, label='+/- 2 St Dev', color='orange')
+        plt.axvline(mean_pct + 2*st_dev_pct, label='+/- 2 St Dev', color='orange')
+        
     plt.title(F"Distribution of {ticker} Daily Log Returns")
     plt.xlabel("Log Return")
     plt.ylabel("Frequency")
+    plt.legend()
     return fig
 
 
 def create_correlation_heatmap(corr_matrix):
+    """
+    Generates an annotated heatmap to visualize linear relationships between assets.
+
+    This matrix is essential for identifying diversification potential; values closer 
+    to 1 indicate high redundancy, while values near 0 or -1 suggest hedging benefits.
+
+    Args:
+        corr_matrix (pd.DataFrame): A square matrix of correlation coefficients (r), 
+            ideally within the range of [-1, 1].
+
+    Returns:
+        matplotlib.figure.Figure: The figure object containing the 'coolwarm' 
+            centered heatmap.
+    """
+    
     fig = plt.figure(figsize=(8,6))
     sns.heatmap(
         corr_matrix,
@@ -96,3 +167,64 @@ def create_correlation_heatmap(corr_matrix):
 
     plt.title("Correlation Matrix Heatmap")
     return fig
+
+def create_sim_output_scatter(cloud_df, optimal_portfolio):
+    """
+    Visualizes the risk-return simulation 'cloud' and highlights the tangency portfolio.
+
+    Args:
+        cloud_df (pd.DataFrame): Simulated portfolios with Volatility, Portfolio_Return, and Sharpe_Ratio.
+        optimal_portfolio (dict/pd.Series): Coordinates for the portfolio maximizing the Sharpe Ratio.
+
+    Returns:
+        plotly.graph_objects.Figure: Interactive scatter plot with the 'Optimal' marker overlaid.
+    """
+    
+    fig = px.scatter(
+        cloud_df,
+        x="Volatility",
+        y="Portfolio_Return",
+        color="Sharpe_Ratio",
+        size="Sharpe_Ratio",
+        opacity=0.5,
+        hover_data=["Sharpe_Ratio"]
+    )
+    
+    fig.add_trace(go.Scatter(
+        x=[optimal_portfolio["Volatility"]],
+        y=[optimal_portfolio["Portfolio_Return"]],
+        mode="markers+text",
+        marker=dict(color="red", size=25, line=dict(color="orange", width=2)),
+        name="Optimal Portfolio",
+        text=["Optimal"],
+        textposition="top left"
+    ))
+    
+    fig.update_layout(plot_bgcolor="white")
+    return fig
+
+
+def sim_results_plot(sim_out_df):
+    """
+    Generates a trio of interactive line plots to track portfolio metrics across simulations.
+
+    Args:
+        sim_out_df (pd.DataFrame): Simulation output containing 'Volatility', 
+            'Portfolio_Return', and 'Sharpe_Ratio' columns.
+
+    Returns:
+        tuple: Three Plotly Figure objects representing Volatility, Return, and Sharpe Ratio trends.
+    """
+    
+    # Plot interactive plot for volatility
+    fig_1 = px.line(sim_out_df, y = 'Volatility')
+    
+    # Plot interactive plot for Portfolio Return
+    fig_2 = px.line(sim_out_df, y = 'Portfolio_Return')
+    fig_2.update_traces(line_color = 'red')
+    
+    # Plot interactive plot for Portfolio Return
+    fig_3 = px.line(sim_out_df, y = 'Sharpe_Ratio')
+    fig_3.update_traces(line_color = 'purple')
+
+    return fig_1, fig_2, fig_3
