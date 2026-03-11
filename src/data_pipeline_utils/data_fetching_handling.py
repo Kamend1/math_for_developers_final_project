@@ -3,14 +3,13 @@ import yfinance as yf
 import numpy as np
 from pathlib import Path
 
+
 def save_10_year_single_stock_data_to_csv(ticker: str, per: str = "10y") -> pd.DataFrame:
-    data = yf.download(
-    ticker,
-    period=per,
-    interval="1d",
-    auto_adjust=True,
-    progress=False
-    )
+    data = yf.download(ticker,
+                       period=per,
+                       interval="1d",
+                       auto_adjust=True,
+                       progress=False)
 
     if isinstance(data.columns, pd.MultiIndex):
         data.columns = data.columns.get_level_values(0)
@@ -28,8 +27,7 @@ def create_returns_and_save(
     df: pd.DataFrame,
     ticker: str,
     period: str = "10y",
-    data_folder: str = "data"
-    ) -> pd.DataFrame:
+    data_folder: str = "data") -> pd.DataFrame:
     """
     Create a derived dataset containing daily arithmetic and logarithmic returns,
     save it as a new CSV file in the specified data folder, and return the new DataFrame.
@@ -39,7 +37,7 @@ def create_returns_and_save(
     df : pd.DataFrame
         Input price DataFrame containing at minimum a 'Close' column.
         The index is expected to be a DatetimeIndex.
-    
+
     ticker : str
         Stock ticker symbol used for naming the output file.
 
@@ -71,7 +69,7 @@ def create_returns_and_save(
     - The output file is named:
         {ticker}_{period}_with_returns.csv
     """
-    
+
     new_df = df.copy()
 
     new_df["daily_return"] = new_df["Close"].pct_change()
@@ -90,7 +88,7 @@ def create_returns_and_save(
     new_df.to_csv(filename)
 
     return new_df
-    
+
 
 def percentage_return_classifier(percentage_return):
     if percentage_return > -0.3 and percentage_return <= 0.3:
@@ -117,7 +115,7 @@ def fetch_raw_data(ticker, period="10y", data_folder="data"):
 
 
 def build_close_price_df(tickers, period="10y", data_folder="data"):
-    
+
     close_price_df = pd.DataFrame()
 
     for ticker in tickers:
@@ -136,10 +134,10 @@ def fetch_returns_data(ticker, period="10y", data_folder="data"):
 
 def build_returns_df(tickers, period="10y", data_folder="data"):
     returns_df = pd.DataFrame()
-    
+
     for ticker in tickers:
         return_data = fetch_returns_data(ticker)
-    
+
         returns_df[ticker] = return_data["log_return"].dropna()
 
     return returns_df

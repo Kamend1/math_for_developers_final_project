@@ -2,7 +2,15 @@
 
 ## 1. Project Overview & Objective
 
-This project bridges Modern Portfolio Theory (Harry Markowitz) with Options Pricing (Black-Scholes) to construct and mathematically hedge an optimal asset portfolio. It transitions from a computational, brute-force simulation baseline to a rigorous mathematical proof utilizing matrix algebra and multivariable calculus, concluding with a calculus applications to price a protective put option and analyze convexity effects in financial instruments. The project also displays how optionality change the behavior of vanilla bonds by analizing a theoretical bond and a similar bond, which is callable at par.
+Financial risk is fundamentally a nonlinear concept. While linear approximations such as expected return or bond durations provide an idea at a certain point of these nonlinear functions, the true behavior of financial systems is driven by second-order structures such as variance, covariance, convexity, and option gamma.
+
+This project will attempt to demonstrate how these nonlinear effects emerge in three different settings and demonstrate how solid finance theory and mathematics merge together to find practical applications in:
+
+- Portfolio optimization
+- Option pricing
+- Fixed income instruments with embedded options
+
+The project bridges Modern Portfolio Theory (Harry Markowitz) with Options Pricing (Black-Scholes) to construct and mathematically hedge an optimal asset portfolio. It transitions from a computational, brute-force simulation baseline to a rigorous mathematical proof utilizing matrix algebra and multivariable calculus, concluding with a calculus applications to price a protective put option and analyze convexity effects in financial instruments. The project also displays how optionality change the behavior of vanilla bonds by analizing a theoretical bond and a similar bond, which is callable at par.
 
 ## 2. Mathematical Scope
 
@@ -11,7 +19,7 @@ This repository specifically addresses the following mathematical requirements:
 * **Linear Algebra:** Implements matrix inversion and vector dot products (Notebook 1_2) to compute the closed-form algebraic solution for the unconstrained efficient frontier ($\Sigma^{-1}$).
 * **Calculus:** Utilizes gradient descent and constrained optimization (`scipy.optimize`) to locate the global minimum variance (Notebook 1_3), applies partial derivatives to evaluate the Greeks in the Options Pricing model (Notebook 2_1), and demonstrates Taylor approximations and convexity effects in bond pricing (Notebook 2_2).
 * **Statistics & Probabilities:** Employs Monte Carlo simulations to visualize the feasible set of portfolios (Notebook 1_1) and applies the cumulative standard normal distribution function ($N(x)$) within the Black-Scholes formula (Notebook 2_1).
-* **Combinatorics:** Evaluates the Efficient Frontier across discrete subsets of the selected assets to determine the optimal combinatorial portfolio structure. *(Note: Implementation location to be finalized)*
+* **Combinatorics:** Evaluates the Efficient Frontier across discrete subsets of the selected assets to determine the optimal combinatorial portfolio structure. *(Notebook 1_3)*
 
 ## 3. Repository Architecture
 
@@ -34,6 +42,7 @@ This repository specifically addresses the following mathematical requirements:
 ├── LICENSE                             # MIT License
 ├── README.md                           # Project documentation
 └── requirements.txt                    # Environment dependencies
+```
 
 ## 4. Execution Sequence
 
