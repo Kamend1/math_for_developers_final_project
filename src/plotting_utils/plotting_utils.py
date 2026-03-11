@@ -131,20 +131,52 @@ def create_histogram_distribution_daily_log_returns(return_data, ticker, mean=No
         st_dev_pct = st_dev * 100
 
     fig = plt.figure(figsize=(10, 6))
-    plt.hist(return_data["log_return_pct"], bins=100)
+    plt.hist(return_data["log_return_pct"], bins=100, color='skyblue', edgecolor='black', alpha=0.7)
     plt.axvline(mean, label='Mean', color='r')
 
     if mean is not None and st_dev is not None:
-        plt.axvline(mean_pct - st_dev_pct, label='+/- 1 St Dev', color='y')
-        plt.axvline(mean_pct + st_dev_pct, label='+/- 1 St Dev', color='y')
-        plt.axvline(mean_pct - 2*st_dev_pct, label='+/- 2 St Dev', color='orange')
-        plt.axvline(mean_pct + 2*st_dev_pct, label='+/- 2 St Dev', color='orange')
+        plt.axvline(mean_pct - st_dev_pct, label='+/- 1 St Dev', color='y', linestyle='dashed')
+        plt.axvline(mean_pct + st_dev_pct, label='+/- 1 St Dev', color='y', linestyle='dashed')
+        plt.axvline(mean_pct - 2*st_dev_pct, label='+/- 2 St Dev', color='orange', linestyle='dashed')
+        plt.axvline(mean_pct + 2*st_dev_pct, label='+/- 2 St Dev', color='orange', linestyle='dashed')
 
-    plt.title(F"Distribution of {ticker} Daily Log Returns")
-    plt.xlabel("Log Return")
-    plt.ylabel("Frequency")
+    plt.title(F"Distribution of {ticker} Daily Log Returns", fontsize=14)
+    plt.xlabel("Log Return", fontsize=12)
+    plt.ylabel("Frequency", fontsize=12)
+    plt.grid(axis='y', alpha=0.3)
     plt.legend()
     return fig
+
+
+def create_histogram_distribution_portfolio_metrics(metric,
+                                                    title="Distribution of Variations",
+                                                    xlabel=" Metric Deviation (Spread)",
+                                                    ylabel='Frequency (Number of Portfolio Combinations)'):
+    """
+    Generates a frequency distribution of a given metric with statistical overlays.
+    """
+
+    plt.figure(figsize=(10, 6))
+    plt.hist(metric, bins=10, color='skyblue', edgecolor='black', alpha=0.7)
+
+    plt.axvline(np.mean(metric),
+                color='red',
+                linestyle='dashed',
+                linewidth=2,
+                label=f'Mean: {np.mean(metric):.4f}')
+
+    plt.axvline(np.median(metric),
+                color='green',
+                linestyle='dashed',
+                linewidth=2,
+                label=f'Median: {np.median(metric):.4f}')
+
+    plt.title(title, fontsize=14)
+    plt.xlabel(xlabel, fontsize=12)
+    plt.ylabel(ylabel, fontsize=12)
+    plt.legend()
+    plt.grid(axis='y', alpha=0.3)
+    plt.show()
 
 
 def create_correlation_heatmap(corr_matrix):

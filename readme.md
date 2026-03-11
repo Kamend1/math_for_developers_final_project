@@ -104,3 +104,54 @@ I hope the result offers a slightly different angle on a familiar topic — one 
 As a proud alumnus of the Python Web Development track, I also aimed to structure the notebooks clearly and keep the computational parts efficient and reproducible.
 
 Thank you for the course and for pushing us to look at these topics from a deeper mathematical perspective.
+
+## Developer Log
+
+During the development of this project several implementation issues, optimizations, and modeling lessons emerged. The following notes summarize the most important technical observations and improvements made along the way.
+
+### 1) Simulation Engine Optimization
+
+Early versions of the portfolio simulation engine contained **duplicate vector and matrix multiplication operations**, particularly when repeatedly computing portfolio variance and expected returns inside the Monte Carlo loop.
+
+As my understanding of **linear algebra operations and NumPy vectorization** improved during the course, I refactored these calculations to avoid redundant operations and leverage more efficient array-based computations.
+
+The result was a **substantial performance improvement**:
+
+- Initial implementation: ~30,000 simulations within an acceptable runtime span of about 20 minutes
+- Optimized implementation: **~1,000,000 simulations in the same time** and 100,000 simulations, which I see as a bare minimum run for less than 2 minutes
+
+This optimization significantly improved the stability and visual clarity of the Efficient Frontier generated in Notebook **1_1**.
+
+### 2) Callable Bond Modeling Issue
+
+While developing the callable bond model in **Notebook 2_2**, an early mistake was introduced in the structure of the embedded option.
+
+The model initially allowed the **call option maturity to match the bond maturity**, which is not how callable bonds are structured in practice. In reality, callable bonds are evaluated as a **series of European-style call options**, each exercisable on specific **coupon dates**.
+
+Because of this modeling simplification, the early version of the model embedded an option with **excessive time-to-maturity**, creating an artificially large **time decay component** in the option value. This distorted the callable bond pricing results and led to outputs that initially appeared inconsistent.
+
+Although the conceptual mistake was simple, diagnosing the issue required some time, as it involved tracing how the option maturity affected the embedded option valuation and the resulting bond price behavior.
+
+Correcting the option structure aligned the model more closely with the **standard callable bond decomposition approach used in fixed income modeling**.
+
+### 3) Visualization Learning Curve
+
+Plotting has not historically been one of my strongest technical areas. While working on this project, I experimented with the visualization tool introduced during the course and two other I had encountered in the past:
+
+- **Matplotlib**
+- **Plotly**
+- **Seaborn**
+
+While the visualizations may not always be stylistically perfect, the goal was to clearly communicate the **mathematical behavior of the models**—particularly the geometry of the Efficient Frontier, the payoff structure of protective options, and the curvature of bond price functions.
+
+### 4) Numerical Stability and Edge Cases
+
+Another practical challenge involved handling **edge cases in numerical outputs**, particularly during the Monte Carlo simulation phase.
+
+Occasionally, randomly generated portfolios produced **negative Sharpe ratios** when implementing short time periods, which caused crashes in the rendering of the Sharpe Ratio scatter plot. To maintain stable visualizations while preserving the overall structure of the simulation results, these values were capped at a small positive threshold during plotting preparation.
+
+This adjustment does not materially affect the conclusions of the simulation but ensures **robust graphical rendering of the risk surface and portfolio distributions**.
+
+### Conclusion
+
+Overall, the development process of this project highlighted how theoretical concepts from **linear algebra, calculus, and probability** interact with practical implementation challenges in numerical finance models. Each debugging step and optimization provided a deeper understanding of both the mathematics and the computational tools used to implement it.
