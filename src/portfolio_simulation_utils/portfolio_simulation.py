@@ -14,6 +14,17 @@ def generate_portfolio_weights(n):
 
 
 def simulation_engine(weights, annual_returns, annual_cov_matrix, risk_free_rate):
+    """
+    This method receives arguments: 
+    weights: a list containing floating-point numbers with length equal to the number of risky assets
+    annual returns: a DataFrame object extracted by the methods in the Data Pipeline
+    annual covariance matrix: a DataFrame object obtained by vector multiplication and applying the
+    numpy cov() method
+    Risk-free rate: a floating point number representing the applicable risk free rate.
+
+    The method calculates the portfolio's return, variance, and Sharpe ratio and returns them to
+    the simulation run for the current iteration. Can be used for a single calculation.
+    """
     # Calculate Expected Portfolio Return (w^T * μ)
     port_return = np.sum(weights * annual_returns)
 
@@ -27,28 +38,28 @@ def simulation_engine(weights, annual_returns, annual_cov_matrix, risk_free_rate
     return port_return, port_volatility, sharpe_ratio
 
 
-def run_sim_calc(sim_runs, n, initial_investment):
-    weights_runs = np.zeros((sim_runs, n))
-    sharpe_ratio_runs = np.zeros(sim_runs)
-    expected_portfolio_returns_runs = np.zeros(sim_runs)
-    volatility_runs = np.zeros(sim_runs)
-    return_on_investment_runs = np.zeros(sim_runs)
-    final_value_runs = np.zeros(sim_runs)
+# def run_sim_calc(sim_runs, n, initial_investment):
+#     weights_runs = np.zeros((sim_runs, n))
+#     sharpe_ratio_runs = np.zeros(sim_runs)
+#     expected_portfolio_returns_runs = np.zeros(sim_runs)
+#     volatility_runs = np.zeros(sim_runs)
+#     return_on_investment_runs = np.zeros(sim_runs)
+#     final_value_runs = np.zeros(sim_runs)
 
-    for i in range(sim_runs):
-        # Generate random weights
-        weights = generate_portfolio_weights(n)
-        # Store the weights
-        weights_runs[i, :] = weights
+#     for i in range(sim_runs):
+#         # Generate random weights
+#         weights = generate_portfolio_weights(n)
+#         # Store the weights
+#         weights_runs[i, :] = weights
 
-        # Call "simulation_engine" function and store Sharpe ratio, return and volatility
-        # Note that asset allocation is performed using the "asset_allocation" function
-        expected_portfolio_returns_runs[i], volatility_runs[i], sharpe_ratio_runs[i], final_value_runs[i], \
-        return_on_investment_runs[i] = p_sim.simulation_engine(close_price_df, weights, initial_investment)
+#         # Call "simulation_engine" function and store Sharpe ratio, return and volatility
+#         # Note that asset allocation is performed using the "asset_allocation" function
+#         expected_portfolio_returns_runs[i], volatility_runs[i], sharpe_ratio_runs[i], final_value_runs[i], \
+#         return_on_investment_runs[i] = p_sim.simulation_engine(close_price_df, weights, initial_investment)
 
-        if i % 250 == 0:
-            print(f"Simulation Run = {i}")
-            print(f"Weights = {weights_runs[i].round(3)},"
-            f"Final Value = ${final_value_runs[i]:.2f}, "
-            f"Sharpe Ratio = {sharpe_ratio_runs[i]:.5f}")
-            print('\n')
+#         if i % 250 == 0:
+#             print(f"Simulation Run = {i}")
+#             print(f"Weights = {weights_runs[i].round(3)},"
+#             f"Final Value = ${final_value_runs[i]:.2f}, "
+#             f"Sharpe Ratio = {sharpe_ratio_runs[i]:.5f}")
+#             print('\n')

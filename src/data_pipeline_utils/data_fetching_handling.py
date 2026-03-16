@@ -5,6 +5,11 @@ from pathlib import Path
 
 
 def save_10_year_single_stock_data_to_csv(ticker: str, per: str = "10y") -> pd.DataFrame:
+    """
+    Download historical data from yfinance for a ticker and a period. Period defaults to 10y
+    if not provided. Save the information in a data folder in the main project folder. If data
+    folder is not available, it is first created
+    """
     data = yf.download(ticker,
                        period=per,
                        interval="1d",
@@ -91,6 +96,9 @@ def create_returns_and_save(
 
 
 def percentage_return_classifier(percentage_return):
+    """
+    Classify the daily returns in seven categories
+    """
     if percentage_return > -0.3 and percentage_return <= 0.3:
         return 'Insignificant Change'
     elif percentage_return > 0.3 and percentage_return <= 3:
@@ -108,6 +116,11 @@ def percentage_return_classifier(percentage_return):
 
 
 def fetch_raw_data(ticker, period="10y", data_folder="data"):
+    """
+    This method reads CSV files, which have been previously saved to
+    data folder
+    """
+    
     file_path = Path(data_folder) / f"{ticker}_{period}_auto_adjusted.csv"
     data = pd.read_csv(file_path, index_col=0, parse_dates=True)
 
@@ -115,7 +128,9 @@ def fetch_raw_data(ticker, period="10y", data_folder="data"):
 
 
 def build_close_price_df(tickers, period="10y", data_folder="data"):
-
+    """
+    Extract close prices by ticker in a new DataFrame object
+    """
     close_price_df = pd.DataFrame()
 
     for ticker in tickers:
@@ -126,6 +141,9 @@ def build_close_price_df(tickers, period="10y", data_folder="data"):
 
 
 def fetch_returns_data(ticker, period="10y", data_folder="data"):
+    """
+    Extract return calculations by ticker in a new DataFrame object
+    """
     file_path = Path(data_folder) / f"{ticker}_{period}_with_returns.csv"
     data = pd.read_csv(file_path, index_col=0, parse_dates=True)
 
@@ -133,6 +151,10 @@ def fetch_returns_data(ticker, period="10y", data_folder="data"):
 
 
 def build_returns_df(tickers, period="10y", data_folder="data"):
+    """
+    Create CSV file with return calculations by ticker and save in data folder
+    """
+    
     returns_df = pd.DataFrame()
 
     for ticker in tickers:
